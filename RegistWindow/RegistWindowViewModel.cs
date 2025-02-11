@@ -34,8 +34,8 @@ public class RegistWindowViewModel : INotifyPropertyChanged
             this.DMain.Amount = value;
         }
     }
-    private string _mainTagCD;
-    public string MainTagCD
+    private string? _mainTagCD;
+    public string? MainTagCD
     {
         get => this._mainTagCD;
         set
@@ -44,7 +44,7 @@ public class RegistWindowViewModel : INotifyPropertyChanged
             this.DMain.MainTagCD = value;
         }
     }
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public Command Regist { get; }
     public RegistWindowViewModel()
@@ -64,7 +64,7 @@ public class RegistWindowViewModel : INotifyPropertyChanged
     private void InsertData()
     {
         this.DMain.TourokuNO = Guid.NewGuid().ToString();
-        this.DMain.UpdateDatetime = DateTime.Now.Date;
+        this.DMain.UpdateDatetime = DateTime.Now.ToString();
         this.DMain.InsertData();
     }
     private async void ShowCompleteMessage()

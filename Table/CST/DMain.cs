@@ -22,10 +22,10 @@ namespace Expenses
         public int Amount { get; set; }
 
         [TableAttribute(ColumnType.JustColumn,Category.TEXT,true)]
-        public string MainTagCD { get; set; }
+        public string? MainTagCD { get; set; }
 
-        [TableAttribute(ColumnType.JustColumn, Category.DATETIME, true)]
-        public DateTime UpdateDatetime { get; set; }
+        [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
+        public string UpdateDatetime { get; set; }
         public DMain() : base()
         {
         }

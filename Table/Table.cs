@@ -286,15 +286,17 @@ namespace Expenses
         }
         private Table ToRecord(SqliteDataReader reader)
         {
-            var r = this;
+            Type type = this.GetType();  // 現在のクラスの型を取得
+            var instance = Activator.CreateInstance(type);  // 新しいインスタンスを作成
+
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 var columnName = reader.GetName(i);
                 var property = _columnList.Find(x => x.Name == columnName);
                 var value = Convert.ChangeType(reader.GetValue(i), property.PropertyType);
-                property.SetValue(r, value);
+                property.SetValue(instance, value);
             }
-            return r;
+            return instance as Table;
         }
     }
 }

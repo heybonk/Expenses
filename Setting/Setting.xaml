@@ -4,10 +4,21 @@
              x:Class="Expenses.Setting"
              Title="Setting">
     <VerticalStackLayout>
+        <RadioButton Content="タグ"
+                     GroupName="SettingItem"
+                     IsChecked="{Binding SelectedEditMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Tag}"/>
+        <RadioButton Content="タグカテゴリー"
+                     GroupName="SettingItem"
+                     IsChecked="{Binding SelectedEditMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Category}"/>
         <HorizontalStackLayout>
             <Entry
                 WidthRequest="150"
-                Text="{Binding MainTagName,Mode =TwoWay}"/>
+                Text="{Binding Name,Mode =TwoWay}"/>
+            <Picker ItemsSource="{Binding TagCategories}"
+                    ItemDisplayBinding="{Binding TagCategoryName}"
+                    SelectedItem="{Binding SelectedTagCategory}"
+                    IsEnabled ="{Binding IsEnabledPicker}"
+                    Title="タグカテゴリー"/>
         </HorizontalStackLayout>
         <Button
             Text="登録"

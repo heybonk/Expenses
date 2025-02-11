@@ -11,7 +11,7 @@ public class MainTag:Table
     public string MainTagName { get; set; }
 
     [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
-    public string SubTagCD { get; set; }
+    public string TagCategoryCD { get; set; }
     
     [TableAttribute(ColumnType.JustColumn, Category.INTEGER, false)]
     public int DisplayOrder { get; set; }
