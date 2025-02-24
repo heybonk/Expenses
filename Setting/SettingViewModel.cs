@@ -7,7 +7,9 @@ namespace Expenses;
 public class SettingViewModel : INotifyPropertyChanged
 {
     internal MainTag MainTag { get; set; }
+    internal ObservableCollection<MainTag> MainTags { get; set; }
     internal TagCategory TagCategory { get; set; }
+    internal TableForDataGrid TableForDataGrid{ get; set; }
 
     private string _cd;
     public string CD
@@ -68,7 +70,14 @@ public class SettingViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsEnabledPicker));
         }
     }
-    public ObservableCollection<TagCategory> TagCategories { get; } = new ObservableCollection<TagCategory>();
+    public ObservableCollection<TagCategory> TagCategories
+    {
+        get => this.TableForDataGrid.TagCategories;
+    }
+    public ObservableCollection<TableForDataGrid.TagAndCategory> TagAndCategorys
+    {
+        get => this.TableForDataGrid.TagAndCategorys;
+    }
     private TagCategory _selectedTagCategory;
     public TagCategory SelectedTagCategory
     {
@@ -91,8 +100,7 @@ public class SettingViewModel : INotifyPropertyChanged
         this.TagCategory = new TagCategory();
         this.PropertyChanged += this.Viewmodel_PropertyChanged;
         this.Regist = new Command(this.RegistData);
-        var a = new TagCategory().SelectAll().Cast<TagCategory>();
-        this.TagCategories = new ObservableCollection<TagCategory>(a.OfType<TagCategory>());
+        this.TableForDataGrid = new TableForDataGrid();
     }
     protected void OnPropertyChanged(string propertyName)
     {
@@ -102,6 +110,7 @@ public class SettingViewModel : INotifyPropertyChanged
     {
         this.InsertData();
         this.ShowCompleteMessage();
+        this.MainTag = new MainTag();
     }
     private void InsertData()
     {
@@ -110,6 +119,7 @@ public class SettingViewModel : INotifyPropertyChanged
             this.MainTag.MainTagCD = Guid.NewGuid().ToString();
             this.MainTag.DisplayOrder = 0;
             this.MainTag.InsertData();
+            this.MainTags.Add(this.MainTag);
         }
         else if (this.SelectedEditMode == EditMode.Category)
         {
@@ -121,7 +131,17 @@ public class SettingViewModel : INotifyPropertyChanged
     }
     private async void ShowCompleteMessage()
     {
-        await Application.Current.MainPage.DisplayAlert("完了", "操作が完了しました", "OK");
+        var RegistItemName = default(string);
+        if (this.SelectedEditMode == EditMode.Tag)
+        {
+            RegistItemName = "タグ";
+
+        }
+        else if (this.SelectedEditMode == EditMode.Category)
+        {
+            RegistItemName = "カテゴリー";
+        }
+        Common.ShowMessage("完了", RegistItemName + "の登録が完了しました", "OK");
     }
     private void Viewmodel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {

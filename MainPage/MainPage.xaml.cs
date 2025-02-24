@@ -12,7 +12,7 @@ public partial class MainPage : ContentPage
 	protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        _megistWindowViewModel.ResetButton();
+        // this._megistWindowViewModel.ResetButton();
     }
 }
 

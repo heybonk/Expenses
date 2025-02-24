@@ -69,6 +69,6 @@ public class RegistWindowViewModel : INotifyPropertyChanged
     }
     private async void ShowCompleteMessage()
     {
-        await Application.Current.MainPage.DisplayAlert("完了", "操作が完了しました", "OK");
+        await Application.Current.MainPage.DisplayAlert("完了", "記録の登録が完了しました", "OK");
     }
 }
