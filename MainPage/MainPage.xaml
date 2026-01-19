@@ -4,19 +4,57 @@
              xmlns:local="clr-namespace:Expenses"
              x:Class="Expenses.MainPage">
     <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
+        <Grid
+            Padding="20,0"
+            RowDefinitions="Auto,Auto,*">
+            <Label Text="{Binding Source={x:Static local:TableUtility.Instance},
+                   Path=TotalAmount_ThisMonth,
+                   StringFormat='今月の出費 {0:N0} 円'}"
+                   FontAttributes="Bold"
+                   FontSize ="30"
+                   Grid.Row="0"
+                   Margin="0,20,0,20"
+                   TextDecorations="Underline"
+                   HorizontalOptions="Start"
+                   VerticalOptions="Start"
+                   TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding OpenMonthlyWindow}"/>
+                </Label.GestureRecognizers>
+            </Label>
             <Button
                 x:Name="SettingBtn"
-                Text="設定"
-                SemanticProperties.Hint="Counts the number of times you click"
+                Text="タグ設定"
+                   Grid.Row="1"
+                   Margin="0,0,0,30"
                 Command="{Binding OpenSettingWindow}"
-                WidthRequest="70"
+                WidthRequest="90"
                 HorizontalOptions="End"
                 VerticalOptions="Start"/>
-            <ContentView Content="{Binding StackLayout ,Mode=TwoWay}"/>
-        </VerticalStackLayout>
+
+            <CollectionView
+                ItemsSource="{Binding ButtonAreas}"
+                   Grid.Row="2"
+                SelectionMode="None">
+
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout
+                        Orientation="Vertical"
+                        Span="1"
+                        HorizontalItemSpacing="2"
+                        VerticalItemSpacing="6"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <local:UCButtonArea/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </Grid>
     </ScrollView>
 
 </ContentPage>

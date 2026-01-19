@@ -2,17 +2,45 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Expenses.RegistWindow"
-             Title="RegistWindow">
+             Title="{Binding Title}">
     <VerticalStackLayout>
-        <HorizontalStackLayout>
-            <Entry
-                WidthRequest="100"
-                Text="{Binding Amount,Mode =TwoWay}"/>
+        <Grid RowDefinitions="Auto,Auto,Auto"
+            Margin ="5,10,30,10"
+            ColumnSpacing="10"
+            RowSpacing="10"
+              ColumnDefinitions="Auto,*">
+            <Label Text="日付"
+                FontSize="25"
+                VerticalTextAlignment="Center"
+                   Grid.Row="0"
+                   Grid.Column="0"/>
             <DatePicker
+                Grid.Row="0"
+                Grid.Column="1"
                 Date="{Binding RecordingDate,Mode=TwoWay}"/>
-        </HorizontalStackLayout>
+            <Label Text="金額"
+                FontSize="25"
+                VerticalTextAlignment="Center"
+                   Grid.Row="1"
+                   Grid.Column="0"/>
+            <Entry
+                Keyboard="Numeric"
+                Grid.Row="1"
+                Grid.Column="1"
+                Text="{Binding Amount,Mode =TwoWay}"/>
+            <Label Text="備考"
+                FontSize="25"
+                VerticalTextAlignment="Center"
+                   Grid.Row="2"
+                   Grid.Column="0"/>
+            <Entry
+                Grid.Row="2"
+                Grid.Column="1"
+                Text="{Binding Bikou,Mode =TwoWay}"/>
+        </Grid>
         <Button
-            Text="登録"
+            Text="{Binding ButtonText}"
+            Margin ="10"
             SemanticProperties.Hint="Counts the number of times you click"
             Command="{Binding Regist}"
             HorizontalOptions="Fill"/>

@@ -5,11 +5,13 @@
              x:Class="Expenses.App">
     <Application.Resources>
         <ResourceDictionary>
-            <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+
 using System.Text.Json;
 using CommunityToolkit.Maui.Core.Extensions;
 
@@ -11,83 +13,87 @@ namespace Expenses;
 
 public class MainViewModel : ObservableObject
 {
-    public StackLayout StackLayout { get; set; }
+    public ObservableCollection<UCButtonAreaViewModel> ButtonAreas { get; }
+    = new ObservableCollection<UCButtonAreaViewModel>();
+
     public IAsyncRelayCommand OpenSettingWindow { get; }
-
-    internal ObservableCollection<MainTag> MainTags { get; set; }
-
+    public IAsyncRelayCommand OpenMonthlyWindow { get; }
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public MainViewModel()
     {
-        this.StackLayout = new StackLayout();
-		DataBaseHelper.Init();
-		TableHelper.Init();
+        DataBaseHelper.Init();
+        TableHelper.Init();
+        DTotal.UpdatebyMonth();
         this.OpenSettingWindow = new AsyncRelayCommand(this.OpenSetting);
+        this.OpenMonthlyWindow = new AsyncRelayCommand(this.OpenMonthly);
 
-        this.ResetMainTags();
-
-        this.ResetButtons();
-
-
+        this.ResetTagCategories();
+        this.ResetTag();
     }
     internal void ResetButtons()
     {
-        this.StackLayout.Children.Clear();
+        this.ButtonAreas.Clear();
 
-        foreach (var m in this.MainTags)
+        var result = TableUtility.Instance.MainTags
+    .OrderBy(x => x.DisplayOrder)
+    .GroupBy(x => x.TagCategoryCD)
+    .Select(g => g.ToList())
+    .ToList();
+
+        foreach (var item in result)
         {
-            this.SetButton(m);
+            var model = new UCButtonAreaViewModel(item);
+            this.ButtonAreas.Add(model);
         }
     }
     private void ResetMainTags()
     {
         var maintags = new MainTag().SelectAll().OfType<MainTag>();
-        if (maintags != null)
-        {
-            this.MainTags = new ObservableCollection<MainTag>(maintags);
-        }
-        else
-        {
-            this.MainTags = new ObservableCollection<MainTag>();
-        }
-        this.MainTags.CollectionChanged += this.MainTags_CollectionChanged;
+        TableUtility.Instance.MainTags = new ObservableCollection<MainTag>(maintags);
     }
-    private void SetButton(MainTag m)
+    private void ResetTagCategories()
     {
-        var button = new UCMainTagButton();
-        var model = new UCMainTagButtonViewModel();
-        model.MainTag = m;
-        model.OpenRegistWindow = new AsyncRelayCommand<string>(this.OpenSub);
-        button.BindingContext = model;
-        this.StackLayout.Children.Add(button);
+        var tagCategories = new TagCategory().SelectAll().OfType<TagCategory>();
+        TableUtility.Instance.TagCategories = new ObservableCollection<TagCategory>(tagCategories);
     }
-    private async Task OpenSub(string maintagCD)
+    private async Task OpenSub(MainTag maintag)
     {
         var navigationParameter = new Dictionary<string, object>
         {
-            { "maintagCD", maintagCD }
+            { "maintag", maintag }
         };
         await Shell.Current.GoToAsync("RegistWindow", navigationParameter);
     }
     private async Task OpenSetting()
     {
-        var navigationParameter = new Dictionary<string, object>
-        {
-            { "MainTags", this.MainTags }
-        };
+        var navigationParameter = new Dictionary<string, object> { };
         await Shell.Current.GoToAsync("Setting", navigationParameter);
     }
-    public void MainTags_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private async Task OpenMonthly()
     {
-        if (e.Action == NotifyCollectionChangedAction.Add)
+        var navigationParameter = new Dictionary<string, object> { };
+        await Shell.Current.GoToAsync("MonthlyWindow", navigationParameter);
+    }
+    private void ResetTag()
+    {
+        this.ResetMainTags();
+        this.ResetButtons();
+        foreach (var maintag in TableUtility.Instance.MainTags)
         {
-            foreach (var newItem in e.NewItems)
+            var c = TableUtility.Instance.TagCategories.FirstOrDefault(t => t.TagCategoryCD == maintag.TagCategoryCD);
+            if (c != null)
             {
-                var item = newItem as MainTag;
-                if (newItem != null)
-                {
-                    this.SetButton(newItem as MainTag);
-                }
+                maintag.TagCategoryName = c.TagCategoryName;
             }
         }
+    }
+    public void OnAppearing()
+    {
+        TableUtility.Instance.SetAmountByMonth(DateTime.Now);
+        this.ResetButtons();
     }
 }

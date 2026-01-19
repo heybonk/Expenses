@@ -13,14 +13,16 @@ namespace Expenses
     {
         public static void Init()
         {
-            if (!Path.Exists(DataBaseHelper.DBFilePath))
-            {
+            // if (!Path.Exists(DataBaseHelper.DBFilePath))
+            // {
+            //     GetTableClass().ToList().ForEach(x => x.CreateTable());
+            // }
                 GetTableClass().ToList().ForEach(x => x.CreateTable());
-            }
+
         }
         private static Table[] GetTableClass()
         {
-            return new Table[] {new DMain(),new MainTag(),new TagCategory()};
+            return new Table[] { new DMain(), new MainTag(), new TagCategory(), new DTotal()};
         }
     }
 }

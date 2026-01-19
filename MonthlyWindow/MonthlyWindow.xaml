@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Expenses.MonthlyWindow"
+             xmlns:local="clr-namespace:Expenses"
+             Title="{Binding Month,StringFormat='{}{0:yyyy年MM月}'}">
+    <Grid RowDefinitions="Auto,*">
+        <HorizontalStackLayout Grid.Row="0" Margin="0,0,0,30">
+            <VerticalStackLayout>
+                <Grid ColumnDefinitions="45,90"
+                      RowDefinitions="Auto,Auto,Auto"
+                      Margin="0,0,50,0">
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Text="月出費"/>
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="End"
+                        TextColor ="red"
+                        Text="{Binding Source={x:Static local:TableUtility.Instance},
+                   Path=TotalAmount_ThisMonth,
+                   StringFormat='{0:N0} 円'}"/>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Text="月収入"/>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="End"
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                        Text="{Binding Source={x:Static local:TableUtility.Instance},
+                   Path=TotalIncome_ThisMonth,
+                   StringFormat='{0:N0} 円'}"/>
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Text="月収支"/>
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="End"
+                        TextColor ="{Binding Source={x:Static local:TableUtility.Instance},
+                   Path=Color}"
+                        Text="{Binding Source={x:Static local:TableUtility.Instance},
+                   Path=TotalBalance_ThisMonth,
+                   StringFormat='{0:N0} 円'}"/>
+                </Grid>
+            </VerticalStackLayout>
+            <Button
+                Text="前月"
+                Command="{Binding Move}"
+                CommandParameter="{Binding PrevMonth}"
+                Margin="2,2,2,2"
+                HorizontalOptions="Fill"/>
+            <Button
+                Text="次月"
+                Command="{Binding Move}"
+                CommandParameter="{Binding NextMonth}"
+                Margin="2,2,2,2"
+                HorizontalOptions="Fill"/>
+
+            <Button
+                Text="表示切替"
+                Command="{Binding ChangeDisplay}"
+                Margin="2,2,2,2"
+                HorizontalOptions="Fill"/>
+
+        </HorizontalStackLayout>
+
+        <CollectionView ItemsSource="{Binding lDmain}"
+                        SelectionMode="None"
+                        IsVisible="{Binding IsShowMeisai}"
+                        Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout>
+                        <Grid
+                            IsVisible="{Binding IsShowHeader}"
+                            BackgroundColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                            HeightRequest="50"
+                            Padding="8">
+                            <Label
+                                Text="{Binding RecordingDate,StringFormat='{}{0:MM月dd日（ddd）}'}"
+                                FontSize="26"
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
+                                
+                                FontAttributes="Bold"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*,*,Auto,Auto">
+                            <Label Text="{Binding MainTagName}"
+                                   Grid.Column="0"
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"/>
+                            <Label Text="{Binding Amount,StringFormat='{0:N0}'}"
+                                   Grid.Column="1"
+                                   FontSize="20"
+                                   VerticalTextAlignment="Center"/>
+                            <Label Text="{Binding Bikou}"
+                                   Grid.Column="2"
+                                   VerticalTextAlignment="Center"/>
+
+                            <Border Grid.Column="3"
+                                    Margin="1"
+                                    Stroke="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 26"
+                                    WidthRequest="52"
+                                    HeightRequest="52">
+
+                                <Label Text="✎"
+                                       TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                       FontSize="26"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                          Path=BindingContext.OpenRegistWindow}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Border>
+
+                            <Border Grid.Column="4"
+                                    Margin="1"
+                                    Stroke="Red"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 126"
+                                    WidthRequest="52"
+                                    HeightRequest="52">
+
+                                <Label Text="×"
+                                       TextColor="Red"
+                                       FontSize="26"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                  Path=BindingContext.Delete}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <CollectionView ItemsSource="{Binding Source={x:Static local:TableUtility.Instance}, Path=DTotalByMainTag}"
+                        IsVisible="{Binding IsShowSummary}"
+                        SelectionMode="None"
+                        Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout>
+                        <Grid
+                            IsVisible="{Binding IsShowHeader}"
+                            BackgroundColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                            Padding="8"
+                            HeightRequest="50"
+                            ColumnDefinitions="*,Auto">
+                            <Label
+                                Text="{Binding TagCategoryName}"
+                                Grid.Column="0"
+                                FontSize="26"
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
+
+                                FontAttributes="Bold"/>
+                            <Label
+                                Text="{Binding Amount_Category,StringFormat='{0:N0}'}"
+                                Grid.Column="1"
+                                FontSize="26"
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
+
+                                FontAttributes="Bold"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+                            <Label Text="{Binding MainTagName}"
+                                   Grid.Column="0"
+                                   FontSize="15"
+                                   VerticalTextAlignment="Center"/>
+                            <Label Text="{Binding Amount,StringFormat='{0:N0}'}"
+                                   Grid.Column="1"
+                                   FontSize="20"
+                                   VerticalTextAlignment="Center"/>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

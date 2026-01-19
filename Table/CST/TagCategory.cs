@@ -8,10 +8,27 @@ public class TagCategory:Table
     public string TagCategoryCD { get; set; }
 
     [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
-    public string TagCategoryName { get; set; }
+    public string TagCategoryName
+    {
+        get => this._tagCategoryName;
+        set
+        {
+            this._tagCategoryName = value;
+            this.OnPropertyChanged(nameof(TagCategoryName));
+        }
+    }
 
     [TableAttribute(ColumnType.JustColumn, Category.INTEGER, false)]
     public int DisplayOrder { get; set; }
+
+    [TableAttribute(ColumnType.JustColumn, Category.INTEGER, false)]
+    public int IsIncome { get; set; }
+    [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
+    public string Color { get; set; }
+    
+
+
+    private string _tagCategoryName;
 
     public TagCategory() : base()
     {

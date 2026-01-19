@@ -1,6 +1,9 @@
 namespace Expenses;
 
-[QueryProperty(nameof(MainTagCD), "maintagCD")]
+[QueryProperty(nameof(MainTag), "maintag")]
+[QueryProperty(nameof(DMain), "dmain")]
+
+
 public partial class RegistWindow : ContentPage
 {
 	private RegistWindowViewModel _registWindowViewModel = new RegistWindowViewModel();
@@ -14,14 +17,15 @@ public partial class RegistWindow : ContentPage
 			_registWindowViewModel.DMain = value;  // ViewModel に値を渡す
 		}
 	}
-	private string _mainTagCD;
-	public string MainTagCD
+	private MainTag _mainTag;
+	public MainTag MainTag
 	{
-		get { return _mainTagCD; }
+		get { return _mainTag; }
 		set
 		{
-			_mainTagCD = value;  // プロパティに値を設定
-			_registWindowViewModel.MainTagCD = value;  // ViewModel に値を渡す
+			_mainTag = value;  // プロパティに値を設定
+			_registWindowViewModel.MainTag = _mainTag;  // ViewModel に値を渡す
+			_registWindowViewModel.Title = _mainTag.MainTagName;  // ViewModel に値を渡す
 		}
 	}
 	public RegistWindow()
@@ -29,4 +33,5 @@ public partial class RegistWindow : ContentPage
 		InitializeComponent();
 		this.BindingContext = this._registWindowViewModel;
 	}
+
 }

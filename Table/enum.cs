@@ -20,9 +20,3 @@ public enum Category
     //日付時間
     DATETIME,
 }
-
-public enum Mode
-{
-    Purchase,
-    Sell,
-}

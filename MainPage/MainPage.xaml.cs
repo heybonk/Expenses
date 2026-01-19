@@ -8,11 +8,18 @@ public partial class MainPage : ContentPage
 	{
 		InitializeComponent();
 		this.BindingContext = _megistWindowViewModel;
+
+		TableUtility.Instance.DefaultColor = this.SettingBtn.BackgroundColor;
+		TableUtility.Instance.DefaultTextColor = this.SettingBtn.TextColor;
 	}
 	protected override void OnNavigatedTo(NavigatedToEventArgs args)
+	{
+		base.OnNavigatedTo(args);
+	}
+	protected override void OnAppearing()
     {
-        base.OnNavigatedTo(args);
-        // this._megistWindowViewModel.ResetButton();
+        base.OnAppearing();
+        (BindingContext as MainViewModel)?.OnAppearing();
     }
 }
 

@@ -11,6 +11,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Primitives;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Runtime.CompilerServices;
+using CommunityToolkit.Maui.Converters;
+using System.ComponentModel;
 
 
 namespace Expenses
@@ -49,6 +51,7 @@ namespace Expenses
 
         internal void CreateTable()
         {
+            if (this.IsTableExist()) return;
             //列属性を持つプロパティの取得
             Type type = this.GetType();
 
@@ -73,7 +76,6 @@ namespace Expenses
             using (var connection = new SqliteConnection(DataBaseHelper.ConnectionString))
             {
                 connection.Open();
-
                 using (var command = new SqliteCommand())
                 {
                     command.Connection = connection;
@@ -82,8 +84,25 @@ namespace Expenses
                 }
             }
         }
+        private bool IsTableExist()
+        {
+            var query = new StringBuilder();
+            query.AppendLine($@"SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = '{this._tableName}'" );
+
+            using (var connection = new SqliteConnection(DataBaseHelper.ConnectionString))
+            {
+                connection.Open();
+                using (var command = new SqliteCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = query.ToString();
+                    return (long)command.ExecuteScalar() > 0;
+                }
+            }
+        }
         internal void SetByPrimaryKey()
         {
+            if (!this.IsExistData()) return;
             //クエリ文の作成
             var terms = " WHERE ";
             for (int i = 0; i < _pkList.Count; i++)
@@ -165,7 +184,6 @@ namespace Expenses
                 }
             }
         }
-
         internal void UpdateData()
         {
             var query = new StringBuilder();
@@ -203,7 +221,6 @@ namespace Expenses
                 }
             }
         }
-
         internal void DeleteData()
         {
             //クエリ文の作成
@@ -231,7 +248,6 @@ namespace Expenses
                 }
             }
         }
-
         internal bool IsExistData()
         {
             //クエリ文の作成
@@ -270,21 +286,43 @@ namespace Expenses
             var query = @"SELECT * FROM " + this._tableName;
 
             //結果の取得
+            return this.Select(query);
+        }
+        internal static void Execute(string query)
+        {
             using (var connection = new SqliteConnection(DataBaseHelper.ConnectionString))
             {
                 connection.Open();
 
-                using (var command = new SqliteCommand(query, connection))
+                using (var command = new SqliteCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = query.ToString();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        internal IEnumerable<Table> Select(string selectQuery)
+        {
+            var result = new List<Table>();
+
+            using (var connection = new SqliteConnection(DataBaseHelper.ConnectionString))
+            {
+                connection.Open();
+
+                using (var command = new SqliteCommand(selectQuery, connection))
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        yield return this.ToRecord(reader);
+                        result.Add(this.ToRecord(reader));
                     }
                 }
             }
+
+            return result;
         }
-        private Table ToRecord(SqliteDataReader reader)
+        protected Table ToRecord(SqliteDataReader reader)
         {
             Type type = this.GetType();  // 現在のクラスの型を取得
             var instance = Activator.CreateInstance(type);  // 新しいインスタンスを作成

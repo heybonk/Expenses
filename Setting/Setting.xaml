@@ -1,30 +1,203 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:Expenses"
              x:Class="Expenses.Setting"
-             Title="Setting">
-    <VerticalStackLayout>
-        <RadioButton Content="タグ"
-                     GroupName="SettingItem"
-                     IsChecked="{Binding SelectedEditMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Tag}"/>
-        <RadioButton Content="タグカテゴリー"
-                     GroupName="SettingItem"
-                     IsChecked="{Binding SelectedEditMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Category}"/>
-        <HorizontalStackLayout>
-            <Entry
-                WidthRequest="150"
-                Text="{Binding Name,Mode =TwoWay}"/>
-            <Picker ItemsSource="{Binding TagCategories}"
-                    ItemDisplayBinding="{Binding TagCategoryName}"
-                    SelectedItem="{Binding SelectedTagCategory}"
-                    IsEnabled="{Binding IsEnabledPicker}"
-                    Title="タグカテゴリー"/>
+             Title="タグ設定画面">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <HorizontalStackLayout Grid.Row="0">
+
+            <RadioButton Content="タグカテゴリー(親)"
+                         GroupName="SettingItem"
+                         IsChecked="{Binding SelectedEditMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Category}"
+                         IsEnabled="{Binding IsEnabledGridButton}"/>
+            <RadioButton Content="タグ（子）"
+                         GroupName="SettingItem"
+                         IsChecked="{Binding SelectedEditMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Tag}"
+                         IsEnabled="{Binding IsEnabledGridButton}"/>
         </HorizontalStackLayout>
-        <Button
-            Text="登録"
-            SemanticProperties.Hint="Counts the number of times you click"
-            Command="{Binding Regist}"
-            HorizontalOptions="Fill"/>
-    </VerticalStackLayout>
+
+        <HorizontalStackLayout Grid.Row="1">
+            <Entry
+                WidthRequest="170"
+                Margin="10,0,0,0"
+                Text="{Binding Name,Mode =TwoWay}"/>
+            <Picker ItemsSource="{Binding Source={x:Static local:TableUtility.Instance}, Path=TagCategories}"
+                    ItemDisplayBinding="{Binding TagCategoryName,Mode=TwoWay}"
+                    SelectedItem="{Binding SelectedTagCategory ,Mode=TwoWay}"
+                    IsVisible="{Binding IsEnabledPicker}"
+                    Margin="5,0,5,0"
+                    Title="紐付けるタグカテゴリー"/>
+            <Label Text="収入として使用する"
+                   VerticalOptions="Center"
+                   Margin="5,0,0,0"
+                   IsVisible="{Binding IsEnabledIncome}"/>
+            <CheckBox IsChecked="{Binding IsIncome,Mode =TwoWay}"
+                      IsVisible="{Binding IsEnabledIncome}"/>
+        </HorizontalStackLayout>
+
+        <Grid Grid.Row="2"
+                ColumnDefinitions="*,*"
+                Margin="0,0,0,50">
+            <Button
+                Grid.Column="0"
+                Text="{Binding ButtonText}"
+                Margin="10"
+                Grid.ColumnSpan="{Binding RegistButtonSpan}"
+                Command="{Binding Regist}"/>
+
+            <Button Grid.Column="1"
+                    Text="編集キャンセル"
+                    Margin="10"
+                    Command="{Binding Cancel}"
+                    IsVisible="{Binding IsVisibleCancel}"/>
+        </Grid>
+
+
+        <CollectionView ItemsSource="{Binding Source={x:Static local:TableUtility.Instance},Path=TagCategories}"
+                        SelectionMode="None"
+                        CanReorderItems="True"
+                        IsVisible="{Binding IsEnabledIncome}"
+                        Grid.Row="3">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <Label Text="{Binding TagCategoryName}"
+                               Grid.Column="0"
+                               FontSize="26"
+                               VerticalTextAlignment="Center"/>
+
+                        <Border Grid.Column="1"
+                                Margin="1"
+                                Stroke="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 26"
+                                WidthRequest="52"
+                                HeightRequest="52">
+
+                            <Label Text="✎"
+                                   TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                        Path=BindingContext.IsEnabledGridButton}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                          Path=BindingContext.ExecUpdateTagCategory}"
+                                        CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <Border Grid.Column="2"
+                                Margin="1"
+                                Stroke="Red"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 26"
+                                WidthRequest="52"
+                                HeightRequest="52">
+
+                            <Label Text="×"
+                                   TextColor="Red"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                        Path=BindingContext.IsEnabledGridButton}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                  Path=BindingContext.ExecDeleteTagCategory}"
+                                        CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <CollectionView ItemsSource="{Binding Source={x:Static local:TableUtility.Instance}, Path=MainTags}"
+                        SelectionMode="None"
+                        IsVisible="{Binding IsEnabledPicker}"
+                        Grid.Row="3">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout>
+                        <Grid
+                            IsVisible="{Binding IsShowHeader}"
+                            BackgroundColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                            Padding="8">
+                            <Label
+                                Text="{Binding TagCategoryName}"
+                                TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
+                                FontAttributes="Bold"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <Label Text="{Binding MainTagName}"
+                                   Grid.Column="0"
+                                   FontSize="26"
+                                   VerticalTextAlignment="Center"/>
+
+                            <Border Grid.Column="1"
+                                    Margin="1"
+                                    Stroke="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 26"
+                                    WidthRequest="52"
+                                    HeightRequest="52">
+
+                                <Label Text="✎"
+                                       TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                       FontSize="26"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                        Path=BindingContext.IsEnabledGridButton}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                          Path=BindingContext.ExecUpdateMainTag}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Border>
+
+                            <Border Grid.Column="2"
+                                    Margin="1"
+                                    Stroke="Red"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 26"
+                                    WidthRequest="52"
+                                    HeightRequest="52">
+
+                                <Label Text="×"
+                                       TextColor="Red"
+                                       FontSize="26"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                        Path=BindingContext.IsEnabledGridButton}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                  Path=BindingContext.ExecDeleteMainTag}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
 </ContentPage>

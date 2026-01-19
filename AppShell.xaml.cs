@@ -8,5 +8,6 @@ public partial class AppShell : Shell
 
 		Routing.RegisterRoute("MainPage/RegistWindow", typeof(RegistWindow));
 		Routing.RegisterRoute("MainPage/Setting", typeof(Setting));
+		Routing.RegisterRoute("MainPage/MonthlyWindow", typeof(MonthlyWindow));
 	}
 }

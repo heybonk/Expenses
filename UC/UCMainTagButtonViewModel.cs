@@ -7,7 +7,7 @@ namespace Expenses;
 public class UCMainTagButtonViewModel : ObservableObject
 {
     private MainTag _mainTag;
-    internal MainTag MainTag
+    public MainTag MainTag
     {
         get => _mainTag;
         set
@@ -15,9 +15,9 @@ public class UCMainTagButtonViewModel : ObservableObject
             this._mainTag = value;
         }
     }
-    internal string MainTagCD
+    public string MainTagCD
     {
-        get => this._mainTag.MainTagName;
+        get => this._mainTag.MainTagCD;
     }
     public string MainTagName
     {
@@ -27,7 +27,7 @@ public class UCMainTagButtonViewModel : ObservableObject
             this._mainTag.MainTagName = value;
         }
     }
-    public IAsyncRelayCommand<string> OpenRegistWindow { get; set;}
+    public IAsyncRelayCommand<MainTag> OpenRegistWindow { get; set;}
     public UCMainTagButtonViewModel()
     {
     }
