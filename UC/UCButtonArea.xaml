@@ -3,30 +3,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Expenses"
              x:Class="Expenses.UCButtonArea">
-             <VerticalStackLayout>
+    <VerticalStackLayout>
 
-    <Label Text="{Binding TagCategoryName,StringFormat='＜{0}＞'}"
-         FontSize="20"
-         TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"/>
-    <CollectionView
-        ItemsSource="{Binding MainTagButtons}"
-        SelectionMode="None">
+        <HorizontalStackLayout>
+            <Label Text="{Binding TagCategoryName,StringFormat='＜{0}＞'}"
+                   FontSize="20"
+                   TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"/>
+            <Border Margin="1"
+                    Stroke="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 14"
+                    WidthRequest="28"
+                    HeightRequest="28">
+                <Label Text="{Binding Text}"
+                       TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding ChangeVisible}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+        </HorizontalStackLayout>
 
-        <CollectionView.ItemsLayout>
-            <GridItemsLayout
-                Orientation="Vertical"
-                Span="2"
-                HorizontalItemSpacing="2"
-                VerticalItemSpacing="2"/>
-        </CollectionView.ItemsLayout>
+        <CollectionView
+            ItemsSource="{Binding MainTagButtons}"
+            SelectionMode="None"
+            IsVisible="{Binding IsVisibleButtons}">
 
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <local:UCMainTagButton/>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout
+                    Orientation="Vertical"
+                    Span="2"
+                    HorizontalItemSpacing="2"
+                    VerticalItemSpacing="2"/>
+            </CollectionView.ItemsLayout>
 
-    </CollectionView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <local:UCMainTagButton/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
     </VerticalStackLayout>
 
 </ContentView>

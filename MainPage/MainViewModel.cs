@@ -27,6 +27,8 @@ public class MainViewModel : ObservableObject
     {
         DataBaseHelper.Init();
         TableHelper.Init();
+        //todo:次回アプデで消すかも？
+        TagCategory.AddColumn();
         DTotal.UpdatebyMonth();
         this.OpenSettingWindow = new AsyncRelayCommand(this.OpenSetting);
         this.OpenMonthlyWindow = new AsyncRelayCommand(this.OpenMonthly);
@@ -44,9 +46,12 @@ public class MainViewModel : ObservableObject
     .Select(g => g.ToList())
     .ToList();
 
+
         foreach (var item in result)
         {
-            var model = new UCButtonAreaViewModel(item);
+    var cat = TableUtility.Instance.TagCategories.FirstOrDefault(x => x.TagCategoryCD == item.First().TagCategoryCD);
+
+            var model = new UCButtonAreaViewModel(item,cat);
             this.ButtonAreas.Add(model);
         }
     }

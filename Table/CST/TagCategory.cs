@@ -24,6 +24,8 @@ public class TagCategory:Table
     [TableAttribute(ColumnType.JustColumn, Category.INTEGER, false)]
     public int IsIncome { get; set; }
     [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
+    public int IsVisible { get; set; }
+    [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
     public string Color { get; set; }
     
 
@@ -33,5 +35,18 @@ public class TagCategory:Table
     public TagCategory() : base()
     {
     }
-
+    internal static void AddColumn()
+    {
+        try
+        {
+            var q = @"
+ALTER TABLE ""TagCategory"" ADD COLUMN  ""IsVisible"" INTEGER NOT NULL Default 1;
+";
+            Execute(q);
+        }
+        catch (Exception ex)
+        {
+            
+        }
+    }
 }

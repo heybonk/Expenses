@@ -10,8 +10,8 @@ public class UCButtonAreaViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<UCMainTagButtonViewModel> MainTagButtons { get; }
         = new ObservableCollection<UCMainTagButtonViewModel>();
-public event PropertyChangedEventHandler? PropertyChanged;
-private string _tagCategoryName;
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private string _tagCategoryName;
     public string TagCategoryName
     {
         get => this._tagCategoryName;
@@ -21,11 +21,53 @@ private string _tagCategoryName;
             this.OnPropertyChanged(nameof(TagCategoryName));
         }
     }
-
-    public UCButtonAreaViewModel(List<MainTag> ms)
+    private TagCategory _tagCategory;
+    public TagCategory TagCategory
     {
-        this.TagCategoryName=ms.FirstOrDefault()?.TagCategoryName;
+        get => this._tagCategory;
+        set
+        {
+            this._tagCategory = value;
+            this.OnPropertyChanged(nameof(TagCategory));
+        }
+    }
+    private bool _isVisibleButtons;
+    public bool IsVisibleButtons
+    {
+        get => this._isVisibleButtons;
+        set
+        {
+            this._isVisibleButtons = value;
+            OnPropertyChanged(nameof(IsVisibleButtons));
+            if (value)
+            {
+                this.Text = "ー";
+            }
+            else
+            {
+                this.Text = "∨";
+            }
+        }
+    }
+    private string _text;
+    public string Text
+    {
+        get => this._text;
+        set
+        {
+            this._text = value;
+            OnPropertyChanged(nameof(Text));
+        }
+    }
+    public IAsyncRelayCommand ChangeVisible { get; }
+
+    public UCButtonAreaViewModel(List<MainTag> ms,TagCategory tagCategory)
+    {
+        this.TagCategory = tagCategory;
+        this.TagCategoryName = tagCategory.TagCategoryName;
         this.SetButton(ms);
+        this.ChangeVisible = new AsyncRelayCommand(this.Change);
+        this.IsVisibleButtons = Convert.ToBoolean(tagCategory.IsVisible);
     }
     protected void OnPropertyChanged(string propertyName)
     {
@@ -53,5 +95,11 @@ private string _tagCategoryName;
             { "maintag", maintag }
         };
         await Shell.Current.GoToAsync("RegistWindow", navigationParameter);
+    }
+    private async Task Change()
+    {
+        this.IsVisibleButtons = !this.IsVisibleButtons;
+        this.TagCategory.IsVisible = this.IsVisibleButtons ? 1 : 0;
+        this.TagCategory.UpdateData();
     }
 }

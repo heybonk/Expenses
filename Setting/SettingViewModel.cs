@@ -189,7 +189,6 @@ public class SettingViewModel : INotifyPropertyChanged
         this.InsertData();
         this.ShowCompleteMessage();
         this.ResetRegistValue();
-        // this.SetShowHeader();
     }
     private void CancelUpdate()
     {
@@ -217,7 +216,11 @@ public class SettingViewModel : INotifyPropertyChanged
         }
         else if (this.SelectedEditMode == EditMode.Category)
         {
-            if (this.RegistMode == RegistMode.Insert) this.TagCategory.TagCategoryCD = Guid.NewGuid().ToString();
+            if (this.RegistMode == RegistMode.Insert)
+            {
+                this.TagCategory.TagCategoryCD = Guid.NewGuid().ToString();
+                this.TagCategory.IsVisible = 1;
+            }
             this.TagCategory.TagCategoryName = this.Name;
             this.TagCategory.DisplayOrder = 0;
             this.TagCategory.IsIncome = this.IsIncome ? 1 : 0;
