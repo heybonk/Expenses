@@ -22,7 +22,7 @@ namespace Expenses
         }
         private static Table[] GetTableClass()
         {
-            return new Table[] { new DMain(), new MainTag(), new TagCategory(), new DTotal()};
+            return new Table[] { new DMain(), new MainTag(), new TagCategory(), new DTotal(),new MVersion()};
         }
     }
 }

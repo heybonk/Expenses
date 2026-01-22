@@ -25,10 +25,6 @@ public class MainViewModel : ObservableObject
     }
     public MainViewModel()
     {
-        DataBaseHelper.Init();
-        TableHelper.Init();
-        //todo:次回アプデで消すかも？
-        TagCategory.AddColumn();
         DTotal.UpdatebyMonth();
         this.OpenSettingWindow = new AsyncRelayCommand(this.OpenSetting);
         this.OpenMonthlyWindow = new AsyncRelayCommand(this.OpenMonthly);
