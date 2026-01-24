@@ -8,6 +8,8 @@ namespace Expenses;
 
 public class UCButtonAreaViewModel : INotifyPropertyChanged
 {
+    public ObservableCollection<UCButtonAreaViewModel> ButtonAreas { get; }
+    = new ObservableCollection<UCButtonAreaViewModel>();
     public ObservableCollection<UCMainTagButtonViewModel> MainTagButtons { get; }
         = new ObservableCollection<UCMainTagButtonViewModel>();
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -61,13 +63,15 @@ public class UCButtonAreaViewModel : INotifyPropertyChanged
     }
     public IAsyncRelayCommand ChangeVisible { get; }
 
-    public UCButtonAreaViewModel(List<MainTag> ms,TagCategory tagCategory)
+
+    public UCButtonAreaViewModel(List<MainTag> ms, TagCategory tagCategory, ObservableCollection<UCButtonAreaViewModel> buttonAreas)
     {
         this.TagCategory = tagCategory;
         this.TagCategoryName = tagCategory.TagCategoryName;
         this.SetButton(ms);
         this.ChangeVisible = new AsyncRelayCommand(this.Change);
         this.IsVisibleButtons = Convert.ToBoolean(tagCategory.IsVisible);
+        this.ButtonAreas = buttonAreas;
     }
     protected void OnPropertyChanged(string propertyName)
     {

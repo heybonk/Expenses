@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics.Converters;
+using System.Collections.Specialized;
+using CommunityToolkit.Maui.Core.Extensions;
 
 namespace Expenses;
 
@@ -32,6 +34,8 @@ public class SettingViewModel : INotifyPropertyChanged
     public IAsyncRelayCommand<TagCategory> ExecDeleteTagCategory { get; }
     public IAsyncRelayCommand<MainTag> ExecUpdateMainTag { get; }
     public IAsyncRelayCommand<TagCategory> ExecUpdateTagCategory { get; }
+    public IAsyncRelayCommand<TagCategory> ChangeOrder { get; }
+
 
     private string _name;
     public string Name
@@ -169,15 +173,16 @@ public class SettingViewModel : INotifyPropertyChanged
         this.PropertyChanged += this.Viewmodel_PropertyChanged;
         this.Regist = new Command(this.RegistData);
         this.Cancel = new Command(this.CancelUpdate);
-        // this.TableForDataGrid = new TableForDataGrid();
-        var r = new TagCategory().SelectAll().Cast<TagCategory>();
-        TableUtility.Instance.TagCategories = new ObservableCollection<TagCategory>(r.OfType<TagCategory>());
         this.SetShowHeader();
         this.ExecUpdateMainTag = new AsyncRelayCommand<MainTag>(this.UpdateMainTag);
         this.ExecUpdateTagCategory = new AsyncRelayCommand<TagCategory>(this.UpdateTagCategory);
         this.ExecDeleteMainTag = new AsyncRelayCommand<MainTag>(this.DeleteMainTag);
         this.ExecDeleteTagCategory = new AsyncRelayCommand<TagCategory>(this.DeleteTagCategory);
+        this.ChangeOrder = new AsyncRelayCommand<TagCategory>(this.ChangeOrder_Execute);
+
         this.SelectedEditMode = EditMode.Category;
+
+        TableUtility.Instance.ReorderMainTag();
     }
     protected void OnPropertyChanged(string propertyName)
     {
@@ -209,6 +214,7 @@ public class SettingViewModel : INotifyPropertyChanged
             this.MainTag.MainTagName = this.Name;
             this.MainTag.TagCategoryCD = this.SelectedTagCategory.TagCategoryCD;
             this.MainTag.TagCategoryName = this.SelectedTagCategory.TagCategoryName;
+            this.MainTag.CatDisplayOrder = this.SelectedTagCategory.DisplayOrder;
             this.MainTag.DisplayOrder = 0;
             this.MainTag.Update();
             if (this.RegistMode == RegistMode.Insert) TableUtility.Instance.MainTags.Add(this.MainTag);
@@ -220,9 +226,14 @@ public class SettingViewModel : INotifyPropertyChanged
             {
                 this.TagCategory.TagCategoryCD = Guid.NewGuid().ToString();
                 this.TagCategory.IsVisible = 1;
+                int displayorder = 0;
+                if (TableUtility.Instance.TagCategories.Count > 0)
+                {
+                    displayorder = TableUtility.Instance.TagCategories.Max(x => x.DisplayOrder) + 1;
+                }
+                this.TagCategory.DisplayOrder = displayorder;
             }
             this.TagCategory.TagCategoryName = this.Name;
-            this.TagCategory.DisplayOrder = 0;
             this.TagCategory.IsIncome = this.IsIncome ? 1 : 0;
             this.TagCategory.Update();
             if (this.RegistMode == RegistMode.Insert) TableUtility.Instance.TagCategories.Add(this.TagCategory);
@@ -329,7 +340,7 @@ public class SettingViewModel : INotifyPropertyChanged
     }
     private async Task DeleteMainTag(MainTag mainTag)
     {
-        var result = await Application.Current.MainPage.DisplayAlert("確認", "すでに"+mainTag.MainTagName+"に紐づけられている費用は集計できなくなりますが削除しますか？", "Yes", "No");
+        var result = await Application.Current.MainPage.DisplayAlert("確認", "すでに" + mainTag.MainTagName + "に紐づけられている費用は集計できなくなりますが削除しますか？", "Yes", "No");
         if (result == false) return;
         mainTag.DeleteData();
         TableUtility.Instance.MainTags.Remove(mainTag);
@@ -342,10 +353,11 @@ public class SettingViewModel : INotifyPropertyChanged
             Common.ShowMessage("エラー", "このタグカテゴリーが紐づけられているタグが存在するため削除できません", "OK");
             return;
         }
-        var result = await Application.Current.MainPage.DisplayAlert("確認", tagCategory.TagCategoryName +"を削除しますか？", "Yes", "No");
+        var result = await Application.Current.MainPage.DisplayAlert("確認", tagCategory.TagCategoryName + "を削除しますか？", "Yes", "No");
         if (result == false) return;
         tagCategory.DeleteData();
         TableUtility.Instance.TagCategories.Remove(tagCategory);
+        TableUtility.Instance.SetTagCategoryOrder(false);
     }
     private void ResetRegistValue()
     {
@@ -368,8 +380,8 @@ public class SettingViewModel : INotifyPropertyChanged
     private void SetShowHeader()
     {
         var list = TableUtility.Instance.MainTags
-    .OrderBy(x => x.TagCategoryCD)
-    .ToList();
+        .OrderBy(x => x.CatDisplayOrder)
+        .ToList();
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -383,9 +395,54 @@ public class SettingViewModel : INotifyPropertyChanged
             }
         }
         TableUtility.Instance.MainTags.Clear();
+
         foreach (var item in list)
         {
             TableUtility.Instance.MainTags.Add(item);
         }
+    }
+
+    private async Task ChangeOrder_Execute(TagCategory edittingtc)
+    {
+        var originorder = edittingtc.DisplayOrder;
+        var neworder = originorder + 1;
+        if (originorder == TableUtility.Instance.TagCategories.Max(x => x.DisplayOrder)) return;
+
+        var tc = TableUtility.Instance.TagCategories.Where(x => x.DisplayOrder == neworder).FirstOrDefault();
+
+
+        edittingtc.DisplayOrder = neworder;
+        edittingtc.UpdateData();
+        TableUtility.Instance.SetCatDisplayOrder(edittingtc);
+
+        tc.DisplayOrder = originorder;
+        tc.UpdateData();
+        TableUtility.Instance.SetCatDisplayOrder(tc);
+        this.SetShowHeader();
+
+        TableUtility.Instance.TagCategories = TableUtility.Instance.TagCategories.OrderBy(x => x.DisplayOrder).ToObservableCollection();
+
+
+        //22222
+        // if (TableUtility.Instance.TagCategories.Last() == edittingtc) return;
+        // var originorder = TableUtility.Instance.TagCategories.IndexOf(edittingtc);
+        // var neworder = originorder + 1;
+        // var tc = TableUtility.Instance.TagCategories[neworder];
+        // edittingtc.DisplayOrder = neworder;
+        // tc.DisplayOrder = originorder;
+        // TableUtility.Instance.SetTagCategoryOrder(true);
+        // this.SetShowHeader();
+
+
+
+
+        //33333
+        // if (TableUtility.Instance.TagCategories.Last() == edittingtc) return;
+
+        // var originorder = TableUtility.Instance.TagCategories.IndexOf(edittingtc);
+        // TableUtility.Instance.TagCategories.Move(originorder, originorder + 1);
+        // TableUtility.Instance.SetTagCategoryOrder(false);
+
+        // this.SetShowHeader();
     }
 }

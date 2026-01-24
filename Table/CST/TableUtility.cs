@@ -203,17 +203,48 @@ public class TableUtility : INotifyPropertyChanged
             this.Color = Colors.Transparent;
         }
     }
-    public void SetOrder()
+    public void SetTagCategoryOrder(bool orderByDisplayOrder)
+    {
+        if (orderByDisplayOrder) TableUtility.Instance.ReorderTagCategory();
+        for (int i = 0; i < TableUtility.Instance.TagCategories.Count(); i++)
+        {
+            var tc = TableUtility.Instance.TagCategories[i];
+            if (tc.DisplayOrder != i)
+            {
+                tc.DisplayOrder = i;
+                tc.UpdateData();
+            }
+            TableUtility.Instance.SetCatDisplayOrder(tc);
+        }
+    }
+    public void ReorderTagCategory()
     {
         var l = TableUtility.Instance.TagCategories.OrderBy(x => x.DisplayOrder).ToList();
-        for (int i = 0; i < l.Count; i++)
+        TableUtility.Instance.TagCategories.Clear();
+
+        foreach (var item in l)
         {
-            if (l[i].DisplayOrder != i) ;
+            TableUtility.Instance.TagCategories.Add(item);
+        }
+    }
+    internal void SetCatDisplayOrder(TagCategory tg)
+    {
+        foreach (var c in TableUtility.Instance.MainTags)
+        {
+            if (c.TagCategoryCD == tg.TagCategoryCD)
             {
-                l[i].DisplayOrder = i;
-                l[i].UpdateData();
+                c.CatDisplayOrder = tg.DisplayOrder;
             }
         }
-        TableUtility.Instance.TagCategories = l.ToObservableCollection();
+    }
+    public void ReorderMainTag()
+    {
+        var l = TableUtility.Instance.MainTags.OrderBy(x => x.CatDisplayOrder).ToList();
+        TableUtility.Instance.MainTags.Clear();
+
+        foreach (var item in l)
+        {
+            TableUtility.Instance.MainTags.Add(item);
+        }
     }
 }

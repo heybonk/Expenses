@@ -34,7 +34,7 @@ public class MainTag:Table
         }
     }
     public bool IsShowHeader { get; set; }
-
+    public int CatDisplayOrder { get; set; }
     private string _tagCategoryName;
     private string _mainTagName;
 

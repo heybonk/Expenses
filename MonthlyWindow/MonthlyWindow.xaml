@@ -5,7 +5,8 @@
              xmlns:local="clr-namespace:Expenses"
              Title="{Binding Month,StringFormat='{}{0:yyyy年MM月}'}">
     <Grid RowDefinitions="Auto,*">
-        <HorizontalStackLayout Grid.Row="0" Margin="0,0,0,30">
+        <HorizontalStackLayout Grid.Row="0"
+                Margin="0,0,0,30">
             <VerticalStackLayout>
                 <Grid ColumnDefinitions="45,90"
                       RowDefinitions="Auto,Auto,Auto"
@@ -18,7 +19,7 @@
                         Grid.Row="0"
                         Grid.Column="1"
                         HorizontalTextAlignment="End"
-                        TextColor ="red"
+                        TextColor="red"
                         Text="{Binding Source={x:Static local:TableUtility.Instance},
                    Path=TotalAmount_ThisMonth,
                    StringFormat='{0:N0} 円'}"/>
@@ -42,7 +43,7 @@
                         Grid.Row="2"
                         Grid.Column="1"
                         HorizontalTextAlignment="End"
-                        TextColor ="{Binding Source={x:Static local:TableUtility.Instance},
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},
                    Path=Color}"
                         Text="{Binding Source={x:Static local:TableUtility.Instance},
                    Path=TotalBalance_ThisMonth,
@@ -74,6 +75,18 @@
                         SelectionMode="None"
                         IsVisible="{Binding IsShowMeisai}"
                         Grid.Row="1">
+            <CollectionView.EmptyView>
+                <Grid HorizontalOptions="Fill"
+                      VerticalOptions="Fill">
+
+                    <Label
+                        Text="データがありません"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Start"
+                        HorizontalTextAlignment="Center"
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"/>
+                </Grid>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <VerticalStackLayout>
@@ -85,8 +98,7 @@
                             <Label
                                 Text="{Binding RecordingDate,StringFormat='{}{0:MM月dd日（ddd）}'}"
                                 FontSize="26"
-                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
-                                
+                                TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
                                 FontAttributes="Bold"/>
                         </Grid>
                         <Grid ColumnDefinitions="*,*,*,Auto,Auto">
@@ -158,6 +170,18 @@
                         IsVisible="{Binding IsShowSummary}"
                         SelectionMode="None"
                         Grid.Row="1">
+            <CollectionView.EmptyView>
+                <Grid HorizontalOptions="Fill"
+                      VerticalOptions="Fill">
+
+                    <Label
+                        Text="データがありません"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Start"
+                        HorizontalTextAlignment="Center"
+                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"/>
+                </Grid>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <VerticalStackLayout>
@@ -171,18 +195,17 @@
                                 Text="{Binding TagCategoryName}"
                                 Grid.Column="0"
                                 FontSize="26"
-                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
-
+                                TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
                                 FontAttributes="Bold"/>
                             <Label
                                 Text="{Binding Amount_Category,StringFormat='{0:N0}'}"
                                 Grid.Column="1"
                                 FontSize="26"
-                        TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
-
+                                TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultTextColor}"
                                 FontAttributes="Bold"/>
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+                        <Grid ColumnDefinitions="*,Auto"
+                                Margin="0,5,0,0">
                             <Label Text="{Binding MainTagName}"
                                    Grid.Column="0"
                                    FontSize="15"

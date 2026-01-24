@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using AdServices;
 using System.Net.Http;
 using System.Text.Json;
-using Sqlite = Microsoft.Data.Sqlite;
 
 namespace Expenses;
 
@@ -19,35 +18,16 @@ internal class VersionAdditional
     }
     internal void Execute()
     {
-        // this.UpdateTable();
-        // this._mVersion.AppVersion = this.APPVERSION;
-        // this._mVersion.Update();
-
-        using Sqlite.SqliteConnection connection = new Sqlite.SqliteConnection(DataBaseHelper.ConnectionString);
-
-        try
-        {
-            connection.Open();
-            using (var transaction = connection.BeginTransaction())
-            {
-                this.UpdateTable();
-                this._mVersion.AppVersion = this.APPVERSION;
-                this._mVersion.Update();
-
-                transaction.Commit();
-            }
-        }
-        catch
-        {
-            throw;
-        }
+        this.UpdateTable();
+        this._mVersion.AppVersion = this.APPVERSION;
+        this._mVersion.Update();
     }
     private void UpdateTable()
     {
-        if (this._mVersion.TableVersion < 2)
+        if (this._mVersion.TableVersion < 1)
         {
             TagCategory.AddColumn();
-            this._mVersion.TableVersion = 2;
+            this._mVersion.TableVersion = 1;
         }
     }
     internal bool CheckVersion()
@@ -81,8 +61,8 @@ internal class VersionAdditional
         this._mVersion = new MVersion() { CD = 1 };
         if (!this._mVersion.IsExistData())
         {
-            this._mVersion.AppVersion = 1;
-            this._mVersion.TableVersion = 1;
+            this._mVersion.AppVersion = 0;
+            this._mVersion.TableVersion = 0;
             this._mVersion.InsertData();
         }
         else

@@ -2,7 +2,7 @@ using System;
 
 namespace Expenses;
 
-public class TagCategory:Table
+public class TagCategory : Table
 {
     [TableAttribute(ColumnType.PrimaryKey, Category.TEXT, false)]
     public string TagCategoryCD { get; set; }
@@ -27,7 +27,7 @@ public class TagCategory:Table
     public int IsVisible { get; set; }
     [TableAttribute(ColumnType.JustColumn, Category.TEXT, true)]
     public string Color { get; set; }
-    
+
 
 
     private string _tagCategoryName;
@@ -46,7 +46,7 @@ ALTER TABLE ""TagCategory"" ADD COLUMN  ""IsVisible"" INTEGER NOT NULL Default 1
         }
         catch (Exception ex)
         {
-            
+
         }
     }
 }

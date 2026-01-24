@@ -62,13 +62,39 @@
                         Grid.Row="3">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="*,Auto,Auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
                         <Label Text="{Binding TagCategoryName}"
                                Grid.Column="0"
                                FontSize="26"
                                VerticalTextAlignment="Center"/>
 
+
                         <Border Grid.Column="1"
+                                Margin="1"
+                                Stroke="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 26"
+                                WidthRequest="52"
+                                HeightRequest="52">
+
+                            <Label Text="⇩"
+                                   TextColor="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
+                                   FontSize="26"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                        Path=BindingContext.IsEnabledGridButton}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                          Path=BindingContext.ChangeOrder}"
+                                        CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <Border Grid.Column="2"
                                 Margin="1"
                                 Stroke="{Binding Source={x:Static local:TableUtility.Instance},Path=DefaultColor}"
                                 StrokeThickness="1"
@@ -93,7 +119,7 @@
                             </Label>
                         </Border>
 
-                        <Border Grid.Column="2"
+                        <Border Grid.Column="3"
                                 Margin="1"
                                 Stroke="Red"
                                 StrokeThickness="1"

@@ -29,17 +29,19 @@ public class MainViewModel : ObservableObject
         this.OpenSettingWindow = new AsyncRelayCommand(this.OpenSetting);
         this.OpenMonthlyWindow = new AsyncRelayCommand(this.OpenMonthly);
 
-        this.ResetTagCategories();
         this.ResetTag();
+        TableUtility.Instance.SetTagCategoryOrder(true);
+        TableUtility.Instance.ReorderTagCategory();
+
     }
     internal void ResetButtons()
     {
         this.ButtonAreas.Clear();
 
         var result = TableUtility.Instance.MainTags
-    .OrderBy(x => x.DisplayOrder)
     .GroupBy(x => x.TagCategoryCD)
     .Select(g => g.ToList())
+    .OrderBy(x => x.First().CatDisplayOrder)
     .ToList();
 
 
@@ -47,7 +49,7 @@ public class MainViewModel : ObservableObject
         {
     var cat = TableUtility.Instance.TagCategories.FirstOrDefault(x => x.TagCategoryCD == item.First().TagCategoryCD);
 
-            var model = new UCButtonAreaViewModel(item,cat);
+            var model = new UCButtonAreaViewModel(item,cat,ButtonAreas);
             this.ButtonAreas.Add(model);
         }
     }
@@ -81,6 +83,7 @@ public class MainViewModel : ObservableObject
     }
     private void ResetTag()
     {
+        this.ResetTagCategories();
         this.ResetMainTags();
         this.ResetButtons();
         foreach (var maintag in TableUtility.Instance.MainTags)
